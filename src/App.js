@@ -1,24 +1,20 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Route, Routes } from "react-router-dom";
+import Dashboard from "./Components/Dashboard";
+import Monthly from "./Components/Monthly";
+import Weekly from "./Components/Weekly";
+import Yearly from "./Components/Yearly";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Routes>
+        <Route path='/' element={<Dashboard/>}/>
+        <Route path='/weekly' element={<Weekly/>}/>
+        <Route path='/monthly' element={<Monthly/>}/>
+        <Route path='/yearly' element={<Yearly/>}/>
+      </Routes>
+    </>
   );
 }
 
