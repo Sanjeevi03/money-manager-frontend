@@ -3,7 +3,11 @@ import Dashboard from "./Dashboard";
 import axios from "axios";
 import {
   Container,
+  FormControl,
+  FormControlLabel,
   Paper,
+  Radio,
+  RadioGroup,
   Table,
   TableBody,
   TableCell,
@@ -14,13 +18,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-const columns = [
-  { id: "sno", label: "S.NO" },
-  { id: "income", label: "Income", minWidth: 80 },
-  { id: "expense", label: "Expenditure", minWidth: 80 },
-  { id: "date", label: "Date",minWidth: 140 },
-  { id: "time", label: "Time",minWidth: 80 },
-];
+import { Box } from "@mui/system";
 
 function Weekly() {
   const [data, setData] = useState([]);
@@ -28,6 +26,7 @@ function Weekly() {
     const loadData = async () => {
       var response = await axios.get("http://localhost:8000/get");
       setData(response.data);
+
     };
     loadData();
   }, []);
@@ -43,54 +42,219 @@ function Weekly() {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+  //sort by income
+  const [incomeSort, setIncomeSort] = useState(true);
+  const handleSortByIncome = () => {
+    setIncomeSort(!incomeSort);
+  };
+  const [expenseSort, setExpenseSort] = useState(true);
+  const handleExpenseByIncome = () => {
+    setExpenseSort(!expenseSort);
+  };
+  //sort by type
+  const [type, setType] = useState("office");
+  const handleType = (e) => {
+    setType(e.target.value);
+  };
   return (
     <>
       <Dashboard />
       <Container>
-        <Typography>Weekly</Typography>
+        <Typography
+          sx={{
+            fontWeight: "600",
+            fontSize: "22px",
+            textAlign: "center",
+            mb: 3,
+          }}
+        >
+          Weekly
+        </Typography>
+        {/* <Button sx={{float:'right'}}>Sort by</Button> */}
+        <Box sx={{ textAlign: "center" }}>
+          <Box>
+            <FormControl>
+              <RadioGroup
+                row
+                aria-labelledby="demo-row-radio-buttons-group-label"
+                name="row-radio-buttons-group"
+              >
+                <FormControlLabel
+                  sx={{ mx: 3, mb: 1 }}
+                  value="office"
+                  name="type"
+                  control={<Radio />}
+                  label="Office"
+                  onChange={handleType}
+                />
+                <FormControlLabel
+                  sx={{ mb: 1 }}
+                  value="personal"
+                  name="type"
+                  control={<Radio />}
+                  label="Personal"
+                  onChange={handleType}
+                />
+              </RadioGroup>
+            </FormControl>
+          </Box>
+        </Box>
         <Paper sx={{ width: "100%", overflow: "hidden" }}>
-          <TableContainer sx={{ maxHeight: 440 }}>
+          <TableContainer sx={{ maxHeight: 500 }}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  {columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      style={{ minWidth: column.minWidth }}
-                    >
-                      {column.label}
-                    </TableCell>
-                  ))}
+                  <TableCell sx={{ fontWeight: "600", textAlign: "center" }}>
+                    S.No
+                  </TableCell>
+                  <TableCell
+                    onClick={handleSortByIncome}
+                    sx={{
+                      cursor: "pointer",
+                      fontWeight: "600",
+                      textAlign: "center",
+                    }}
+                  >
+                    {incomeSort ? <>Income&#8595;</> : <>Income&#8593;</>}
+                  </TableCell>
+                  <TableCell
+                    onClick={handleExpenseByIncome}
+                    sx={{ cursor: "pointer",fontWeight: "600", textAlign: "center" }}
+                  >
+                    {expenseSort ? <>Expense&#8595;</> : <>Expense&#8593;</>}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: "600", textAlign: "center" }}>
+                    Description
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: "600", textAlign: "center" }}>
+                    Date
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: "600", textAlign: "center" }}>
+                    Time
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: "600", textAlign: "center" }}>
+                    Type
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, i) => {
-                    return (
-                      <TableRow
-                        hover
-                        role="checkbox"
-                        tabIndex={-1}
-                        key={row._id}
-                      >
-                        <TableCell>{i + 1}</TableCell>
-                        <TableCell>{row.income}</TableCell>
-                        <TableCell>{row.expense}</TableCell>
-                        <TableCell>{row.date}</TableCell>
+                {incomeSort && expenseSort && type === "office" ? (
+                  data
 
-                        <TableCell>
-                          <>{new Date(row.time).toLocaleString("en-US",{timeZone: 'Asia/Kolkata'}).split(',')[1]}</>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
+                    .sort((a, b) =>
+                      parseInt(a.income) > parseInt(b.income) ? 1 : -1
+                    )
+                    .sort((a, b) =>
+                      parseInt(a.expense) > parseInt(b.expense) ? 1 : -1
+                    )
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .filter((i) => i.type === "office")
+                    .map((row, i) => {
+                      return (
+                        <TableRow
+                          hover
+                          role="checkbox"
+                          tabIndex={-1}
+                          key={row._id}
+                        >
+                          <TableCell sx={{ textAlign: "center" }}>
+                            {i + 1}
+                          </TableCell>
+                          <TableCell sx={{ textAlign: "center" }}>
+                            {row.income}
+                          </TableCell>
+                          <TableCell sx={{ textAlign: "center" }}>
+                            {row.expense}
+                          </TableCell>
+                          <TableCell sx={{ textAlign: "center" }}>
+                            {row.desc.charAt(0).toUpperCase() +
+                              row.desc.slice(1)}
+                          </TableCell>
+                          <TableCell sx={{ textAlign: "center" }}>
+                            {row.date.split(" ").slice(1).join(" ")}
+                          </TableCell>
+                          <TableCell sx={{ textAlign: "center" }}>
+                            <>
+                              {
+                                new Date(row.time)
+                                  .toLocaleString("en-US", {
+                                    timeZone: "Asia/Kolkata",
+                                  })
+                                  .split(",")[1]
+                              }
+                            </>
+                          </TableCell>
+                          <TableCell sx={{ textAlign: "center" }}>
+                            {row.type.charAt(0).toUpperCase() +
+                              row.type.slice(1)}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                ) : (
+                  <>
+                    {data
+
+                      .sort((a, b) =>
+                        parseInt(a.income) < parseInt(b.income) ? 1 : -1
+                      )
+                      .sort((a, b) =>
+                        parseInt(a.expense) < parseInt(b.expense) ? 1 : -1
+                      )
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .filter((i) => i.type === "personal")
+                      .map((row, i) => {
+                        return (
+                          <TableRow
+                            hover
+                            role="checkbox"
+                            tabIndex={-1}
+                            key={row._id}
+                          >
+                            <TableCell sx={{ textAlign: "center" }}>
+                              {i + 1}
+                            </TableCell>
+                            <TableCell sx={{ textAlign: "center" }}>
+                              {row.income}
+                            </TableCell>
+                            <TableCell sx={{ textAlign: "center" }}>
+                              {row.expense}
+                            </TableCell>
+                            <TableCell sx={{ textAlign: "center" }}>
+                              {row.desc.charAt(0).toUpperCase() +
+                                row.desc.slice(1)}
+                            </TableCell>
+                            <TableCell sx={{ textAlign: "center" }}>
+                              {row.date.split(" ").slice(1).join(" ")}
+                            </TableCell>
+                            <TableCell sx={{ textAlign: "center" }}>
+                              <>
+                                {
+                                  new Date(row.time)
+                                    .toLocaleString("en-US", {
+                                      timeZone: "Asia/Kolkata",
+                                    })
+                                    .split(",")[1]
+                                }
+                              </>
+                            </TableCell>
+                            <TableCell sx={{ textAlign: "center" }}>
+                              {row.type.charAt(0).toUpperCase() +
+                                row.type.slice(1)}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                  </>
+                )}
               </TableBody>
             </Table>
           </TableContainer>
           <TablePagination
-            rowsPerPageOptions={[5,10, 25, 100]}
+            rowsPerPageOptions={[5, 10, 25, 100]}
             component="div"
             count={data.length}
             rowsPerPage={rowsPerPage}

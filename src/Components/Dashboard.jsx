@@ -65,6 +65,12 @@ BootstrapDialogTitle.propTypes = {
 };
 
 function Dashboard() {
+ 
+  //clock
+  const [clock,setClock] = useState(new Date().toLocaleString("en-US",{timeZone: 'Asia/Kolkata'}).split(',')[1]);
+  setInterval(()=>(
+    setClock(new Date().toLocaleString("en-US",{timeZone: 'Asia/Kolkata'}).split(',')[1])
+  ),1000)
   //alert add incom
   const [open, setOpen] = React.useState(false);
 
@@ -111,7 +117,7 @@ function Dashboard() {
       time: "",
       type: "",
     });
-    //  console.log(formData);
+    alert("Data Added Succesfully...")
   };
   return (
     <>
@@ -123,7 +129,7 @@ function Dashboard() {
               component="div"
               sx={{ flexGrow: 1, ml: 2.5, fontWeight: "600" }}
             >
-              <Link to="/" style={{ color: "white", textDecoration: "none" }}>
+              <Link to="/dashboard" style={{ color: "white", textDecoration: "none" }}>
                 DashBoard
               </Link>
             </Typography>
@@ -136,6 +142,9 @@ function Dashboard() {
             </Button>
           </Toolbar>
         </AppBar>
+      </Box>
+      <Box sx={{m:2,textAlign:'center'}} style={{}}>
+        <Link to='/' style={{textDecoration:'none'}}><Button variant="contained">Go Home</Button></Link>
       </Box>
       <Box sx={{ minWidth: 140, m: 5 }}>
         <FormControl sx={{ width: "200px" }}>
@@ -165,7 +174,9 @@ function Dashboard() {
             </Link>
           </Select>
         </FormControl>
+        <Box sx={{ float: "right", mr: 5 ,fontFamily:'Zen Kaku Gothic Antique',fontWeight:'600',fontSize:'25px'}}>{clock}</Box>
       </Box>
+
       <Box>
         <BootstrapDialog
           onClose={handleClose}
@@ -273,6 +284,7 @@ function Dashboard() {
           </DialogActions>
         </BootstrapDialog>
       </Box>
+     
     </>
   );
 }
