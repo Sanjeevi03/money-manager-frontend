@@ -24,7 +24,7 @@ function Monthly() {
   const [data, setData] = useState([]);
   useEffect(() => {
     const loadData = async () => {
-      var response = await axios.get("http://localhost:8000/get");
+      var response = await axios.get("https://money-manager-backend1.herokuapp.com/get");
       setData(response.data);
     };
     loadData();

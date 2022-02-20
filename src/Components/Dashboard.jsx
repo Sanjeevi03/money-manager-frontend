@@ -25,7 +25,7 @@ import {
 import PropTypes from "prop-types";
 import { styled } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
-
+// const cors
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
     padding: theme.spacing(2),
@@ -101,7 +101,7 @@ function Dashboard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post("http://localhost:8000/add", {
+    await axios.post("https://money-manager-backend1.herokuapp.com/add", {
       income: formData.income,
       expense: formData.expense,
       time: formData.time,
